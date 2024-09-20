@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import articles from "./article-content";
 import NotFound from "./NotFound";
 import { useEffect, useState } from "react";
@@ -8,10 +8,16 @@ import AddCommentForm from "../components/AddCommentForm";
 import useUser from "../hooks/useUser";
 
 function Article() {
-  const [articleInfo, setArticeInfo] = useState({ upvotes: 0, comments: [] });
-  const { user, isLoading } = useUser();
+  const [articleInfo, setArticeInfo] = useState({
+    upvotes: 0,
+    comments: [],
+    canUpvote: false,
+  });
 
+  const { user, isLoading } = useUser();
   const { articleId } = useParams();
+
+  const { canUpvote = false } = articleInfo;
   const article = articles.find((article) => article.name === articleId);
 
   const upVote = async () => {
@@ -36,8 +42,9 @@ function Article() {
 
   useEffect(() => {
     const getArticleInfo = async () => {
-      const authToken = user && (await user.getIdToken());
-      const headers = authToken ? { authToken } : {};
+      const authtoken = user && (await user.getIdToken());
+      const headers = authtoken ? { authtoken } : {};
+
       if (articleId) {
         await axios
           .get(`http://localhost:8000/api/articles/${articleId}`, {
@@ -55,8 +62,13 @@ function Article() {
           });
       }
     };
-    getArticleInfo();
-  }, []);
+
+    if (!isLoading) {
+      getArticleInfo();
+    }
+  }, [articleId, isLoading, user]);
+
+  const navigate = useNavigate();
 
   if (!article) {
     return <NotFound />;
@@ -66,9 +78,11 @@ function Article() {
     <>
       <div className="upvotes-section">
         {user ? (
-          <button onClick={upVote}>Upvote</button>
+          <button onClick={upVote} disabled={!canUpvote}>
+            Upvote
+          </button>
         ) : (
-          <button>Login to upvote</button>
+          <button onClick={() => navigate("/login")}>Login to upvote</button>
         )}
         <h1>{article.title}</h1>
       </div>

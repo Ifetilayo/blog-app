@@ -11,7 +11,14 @@ button {
   color: white;
   border-radius: 8px;
   cursor: pointer;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed
+  }
 }
+
+
 
 h3, h4 {
   margin-bottom: 0;
@@ -24,6 +31,7 @@ nav {
   top: 0;
   width: 100%;
   background: white;
+  z-index: 1
 }
 
 nav ul {
