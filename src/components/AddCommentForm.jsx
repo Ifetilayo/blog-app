@@ -1,16 +1,12 @@
 import { useState } from "react";
 import axios from "axios";
 import useUser from "../hooks/useUser";
-import useUser from "../hooks/useUser";
 
 function AddCommentForm({ articleId, onArticleUpdated }) {
   const [comment, setComment] = useState("");
   const { user } = useUser();
-  const { user } = useUser();
 
   const postComment = async () => {
-    const authToken = user && (await user.getIdToken());
-    const headers = authToken ? { authToken } : {};
     const authToken = user && (await user.getIdToken());
     const headers = authToken ? { authToken } : {};
     await axios
