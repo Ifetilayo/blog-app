@@ -2,9 +2,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import articles from "./article-content";
 import NotFound from "./NotFound";
 import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import CommentsList from "../components/CommentsList";
 import AddCommentForm from "../components/AddCommentForm";
+import useUser from "../hooks/useUser";
 import useUser from "../hooks/useUser";
 
 function Article() {
@@ -24,7 +26,13 @@ function Article() {
     const authToken = user && (await user.getIdToken());
     const headers = authToken ? { authToken } : {};
 
+    const authToken = user && (await user.getIdToken());
+    const headers = authToken ? { authToken } : {};
+
     await axios
+      .put(`http://localhost:8000/api/articles/${articleId}/upvote`, null, {
+        headers,
+      })
       .put(`http://localhost:8000/api/articles/${articleId}/upvote`, null, {
         headers,
       })
@@ -90,6 +98,13 @@ function Article() {
       {article.content.map((paragraph) => (
         <p key={paragraph}>{paragraph}</p>
       ))}
+      {user ? (
+        <AddCommentForm
+          articleId={articleId}
+          onArticleUpdated={(updatedArticle) => setArticeInfo(updatedArticle)}
+        />
+      ) : null}
+
       {user ? (
         <AddCommentForm
           articleId={articleId}
